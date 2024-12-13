@@ -1,0 +1,58 @@
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+   
+        Store store = new Store("Eco-Friendly Store");
+        store.addProduct(new Product("Reusable Water Bottle", 250, 20, "Plastic Bottle"));
+        store.addProduct(new Product("Reusable Coffee Cups", 300, 25, "Disposable paper or plastic coffee cups."));
+        store.addProduct(new Product("Bamboo Toothbrush", 100, 25, "Plastic Toothbrush"));
+        store.addProduct(new Product("Tote Bag", 150, 15, "Plastic Shopping Bag"));
+        store.addProduct(new Product("Organic Cotton T-Shirts", 200, 20, "Fast fashion t-shirts"));
+        store.addProduct(new Product("Solar Lamp", 1200, 10, "Regular Lamp"));
+        store.addProduct(new Product("Stainless Steel Straw", 15, 20, "Single-use plastic straw"));
+
+
+        ShoppingCart cart = new ShoppingCart();
+        while (true) {
+            store.displayProducts();
+            System.out.println("\nOptions:");
+            System.out.println("1. Add product to cart");
+            System.out.println("2. View cart");
+            System.out.println("3. Checkout and Exit");
+            System.out.print("Choose an option: ");
+            String choice = scanner.nextLine();
+
+            switch (choice) {
+                case "1":
+                    try {
+                        System.out.print("Enter product number: ");
+                        int index = Integer.parseInt(scanner.nextLine()) - 1;
+                        Product product = store.findProduct(index);
+                        if (product != null) {
+                            System.out.print("Enter quantity for " + product.getName() + ": ");
+                            int quantity = Integer.parseInt(scanner.nextLine());
+                            cart.addToCart(product, quantity);
+                        } else {
+                            System.out.println("Invalid product number.");
+                        }
+                    } catch (NumberFormatException e) {
+                        System.out.println("Invalid input. Please enter a number.");
+                    }
+                    break;
+                case "2":
+                    cart.displayCart();
+                    break;
+                case "3":
+                    cart.displayCart();
+                    System.out.println("\nThank you for shopping with us! Goodbye!");
+                    scanner.close();
+                    return;
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+            }
+        }
+    }
+}
