@@ -1,0 +1,171 @@
+import java.util.ArrayList;
+import java.util.Scanner;
+
+class Product {
+    private String name;
+    private double price;
+    private int stock;
+    private String ecoFriendlyAlternative;
+
+    public Product(String name, double price, int stock, String ecoFriendlyAlternative) {
+        this.name = name;
+        this.price = price;
+        this.stock = stock;
+        this.ecoFriendlyAlternative = ecoFriendlyAlternative;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public int getStock() {
+        return stock;
+    }
+
+    public String getEcoFriendlyAlternative() {
+        return ecoFriendlyAlternative;
+    }
+
+    public boolean reduceStock(int quantity) {
+        if (stock >= quantity) {
+            stock -= quantity;
+            return true;
+        }
+        return false;
+    }
+}
+
+
+class Store {
+    private String name;
+    private ArrayList<Product> products;
+
+    public Store(String name) {
+        this.name = name;
+        this.products = new ArrayList<>();
+    }
+
+    public void addProduct(Product product) {
+        products.add(product);
+    }
+
+    public void displayProducts() {
+        System.out.println("\nWelcome to " + name + "!");
+        System.out.println("Available Products:");
+        for (int i = 0; i < products.size(); i++) {
+            Product product = products.get(i);
+            System.out.printf("%d. %s - %.2f (%d in stock)\n", 
+                              i + 1, product.getName(), product.getPrice(), product.getStock());
+            if (product.getEcoFriendlyAlternative() != null) {
+                System.out.println("   - Eco Alternative: " + product.getEcoFriendlyAlternative());
+            }
+        }
+    }
+
+    public Product findProduct(int index) {
+        if (index >= 0 && index < products.size()) {
+            return products.get(index);
+        }
+        return null;
+    }
+}
+
+
+class ShoppingCart {
+    private ArrayList<Product> cart;
+    private ArrayList<Integer> quantities;
+
+    public ShoppingCart() {
+        this.cart = new ArrayList<>();
+        this.quantities = new ArrayList<>();
+    }
+
+    public void addToCart(Product product, int quantity) {
+        if (product.reduceStock(quantity)) {
+            cart.add(product);
+            quantities.add(quantity);
+            System.out.println(quantity + " x " + product.getName() + " added to your cart!");
+        } else {
+            System.out.println("Sorry, not enough stock for " + product.getName() + ".");
+        }
+    }
+
+    public void displayCart() {
+        System.out.println("\nYour Shopping Cart:");
+        if (cart.isEmpty()) {
+            System.out.println("Your cart is empty.");
+            return;
+        }
+        double total = 0;
+        for (int i = 0; i < cart.size(); i++) {
+            Product product = cart.get(i);
+            int quantity = quantities.get(i);
+            double subtotal = product.getPrice() * quantity;
+            System.out.printf("- %d x %s: %.2f\n", quantity, product.getName(), subtotal);
+            total += subtotal;
+        }
+        System.out.printf("Total: %.2f\n", total);
+    }
+}
+
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+
+        Store store = new Store("Eco-Friendly Store");
+        store.addProduct(new Product("Reusable Water Bottle", 250, 20, "Plastic Bottle"));
+        store.addProduct(new Product("Reusable Coffee Cups", 300, 25, "Disposable paper or plastic coffee cups."));
+        store.addProduct(new Product("Bamboo Toothbrush", 100, 25, "Plastic Toothbrush"));
+        store.addProduct(new Product("Tote Bag", 150, 15, "Plastic Shopping Bag"));
+        store.addProduct(new Product("Organic Cotton T-Shirts", 200, 20, "Fast fashion t-shirts"));
+        store.addProduct(new Product("Solar Lamp", 1200, 10, "Regular Lamp"));
+        store.addProduct(new Product("Stainless Steel Straw", 15, 20, "Single-use plastic straw"));
+
+
+        ShoppingCart cart = new ShoppingCart();
+        while (true) {
+            store.displayProducts();
+            System.out.println("\nOptions:");
+            System.out.println("1. Add product to cart");
+            System.out.println("2. View cart");
+            System.out.println("3. Checkout and Exit");
+            System.out.print("Choose an option: ");
+            String choice = scanner.nextLine();
+
+            switch (choice) {
+                case "1":
+                    try {
+                        System.out.print("Enter product number: ");
+                        int index = Integer.parseInt(scanner.nextLine()) - 1;
+                        Product product = store.findProduct(index);
+                        if (product != null) {
+                            System.out.print("Enter quantity for " + product.getName() + ": ");
+                            int quantity = Integer.parseInt(scanner.nextLine());
+                            cart.addToCart(product, quantity);
+                        } else {
+                            System.out.println("Invalid product number.");
+                        }
+                    } catch (NumberFormatException e) {
+                        System.out.println("Invalid input. Please enter a number.");
+                    }
+                    break;
+                case "2":
+                    cart.displayCart();
+                    break;
+                case "3":
+                    cart.displayCart();
+                    System.out.println("\nThank you for shopping with us! Goodbye!");
+                    scanner.close();
+                    return;
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+            }
+        }
+    }
+}
